@@ -4,12 +4,7 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.NetworkInterface;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -420,10 +415,10 @@ public class JmDNSTest {
     }
 
     public static final class Receive extends Thread {
-        MulticastSocket _socket;
+        FakeMulticastSocket _socket;
         DatagramPacket  _in;
 
-        public Receive(MulticastSocket socket, DatagramPacket in) {
+        public Receive(FakeMulticastSocket socket, DatagramPacket in) {
             super("Test Receive Multicast");
             _socket = socket;
             _in = in;
@@ -455,14 +450,14 @@ public class JmDNSTest {
     @Ignore
     public void testTwoMulticastPortsAtOnce() throws UnknownHostException, IOException {
         System.out.println("Unit Test: testTwoMulticastPortsAtOnce()");
-        MulticastSocket firstSocket = null;
-        MulticastSocket secondSocket = null;
+        FakeMulticastSocket firstSocket = null;
+        FakeMulticastSocket secondSocket = null;
         try {
             String firstMessage = "ping";
             String secondMessage = "pong";
             InetAddress someInet = InetAddress.getByName(DNSConstants.MDNS_GROUP);
-            firstSocket = new MulticastSocket(MPORT);
-            secondSocket = new MulticastSocket(MPORT);
+            firstSocket = new FakeMulticastSocket(MPORT);
+            secondSocket = new FakeMulticastSocket(MPORT);
 
             firstSocket.joinGroup(someInet);
             secondSocket.joinGroup(someInet);
