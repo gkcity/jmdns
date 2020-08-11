@@ -64,7 +64,7 @@ public class JmDNSImpl extends JmDNS implements DNSStatefulObject, DNSTaskStarte
     /**
      * This is our multicast socket.
      */
-    private volatile FakeMulticastSocket _socket;
+    private volatile BroadcastSocket _socket;
 
     /**
      * Holds instances of JmDNS.DNSListener. Must by a synchronized collection, because it is updated from concurrent threads.
@@ -454,7 +454,7 @@ public class JmDNSImpl extends JmDNS implements DNSStatefulObject, DNSTaskStarte
         // // The most likely cause is a duplicate address lets open without specifying the address
         // _socket = new MulticastSocket(DNSConstants.MDNS_PORT);
         // }
-        _socket = new FakeMulticastSocket(DNSConstants.MDNS_PORT);
+        _socket = new BroadcastSocket(DNSConstants.MDNS_PORT);
         if ((hostInfo != null) && (hostInfo.getInterface() != null)) {
             final SocketAddress multicastAddr = new InetSocketAddress(_group, DNSConstants.MDNS_PORT);
             _socket.setNetworkInterface(hostInfo.getInterface());
@@ -1622,7 +1622,7 @@ public class JmDNSImpl extends JmDNS implements DNSStatefulObject, DNSTaskStarte
                     logger.debug(getClass().toString(), ".send(" + this.getName() + ") - JmDNS can not parse what it sends!!!", e);
                 }
             }
-            final FakeMulticastSocket ms = _socket;
+            final BroadcastSocket ms = _socket;
             if (ms != null && !ms.isClosed()) {
                 ms.send(packet);
             }
@@ -2299,7 +2299,7 @@ public class JmDNSImpl extends JmDNS implements DNSStatefulObject, DNSTaskStarte
         return _serviceTypes;
     }
 
-    public FakeMulticastSocket getSocket() {
+    public BroadcastSocket getSocket() {
         return _socket;
     }
 

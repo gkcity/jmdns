@@ -36,6 +36,31 @@ public class FakeMulticastSocket extends DatagramSocket {
         }
     }
 
+    @Override
+    void createImpl() throws SocketException {
+        System.out.println("createImpl");
+
+        if (this.impl == null) {
+            if (factory != null) {
+                this.impl = factory.createDatagramSocketImpl();
+            } else {
+//                boolean var1 = this instanceof FakeMulticastSocket;
+                this.impl = DefaultDatagramSocketImplFactory.createDatagramSocketImpl(true);
+            }
+        }
+
+        super.createImpl();
+    }
+
+    @Override
+    DatagramSocketImpl getImpl() throws SocketException {
+        if (this.impl == null) {
+            this.createImpl();
+        }
+
+        return this.impl;
+    }
+
     /**
      * @deprecated
      */
@@ -175,7 +200,7 @@ public class FakeMulticastSocket extends DatagramSocket {
         } else {
             this.checkAddress(var1, "setInterface");
             synchronized (this.infLock) {
-                this.getImpl().setOption(16, var1);
+                this.getImpl().setOption(SocketOptions.SO_BROADCAST, var1);
                 this.infAddress = var1;
                 this.interfaceSet = true;
             }
@@ -187,7 +212,7 @@ public class FakeMulticastSocket extends DatagramSocket {
             throw new SocketException("Socket is closed");
         } else {
             synchronized (this.infLock) {
-                InetAddress var2 = (InetAddress) this.getImpl().getOption(16);
+                InetAddress var2 = (InetAddress) this.getImpl().getOption(SocketOptions.SO_BROADCAST);
                 if (this.infAddress == null) {
                     return var2;
                 } else if (var2.equals(this.infAddress)) {
@@ -222,29 +247,29 @@ public class FakeMulticastSocket extends DatagramSocket {
 
     public void setNetworkInterface(NetworkInterface var1) throws SocketException {
         synchronized (this.infLock) {
-            this.getImpl().setOption(31, var1);
+//            this.getImpl().setOption(31, var1);
             this.infAddress = null;
             this.interfaceSet = true;
         }
     }
 
-    public NetworkInterface getNetworkInterface() throws SocketException {
-        NetworkInterface var1 = (NetworkInterface) this.getImpl().getOption(31);
-        if (var1.getIndex() != 0 && var1.getIndex() != -1) {
-            return var1;
-        } else {
-            InetAddress[] var2 = new InetAddress[]{InetAddress.anyLocalAddress()};
-            return new NetworkInterface(var2[0].getHostName(), 0, var2);
-        }
-    }
+//    public NetworkInterface getNetworkInterface() throws SocketException {
+//        NetworkInterface var1 = (NetworkInterface) this.getImpl().getOption(31);
+//        if (var1.getIndex() != 0 && var1.getIndex() != -1) {
+//            return var1;
+//        } else {
+//            InetAddress[] var2 = new InetAddress[]{InetAddress.anyLocalAddress()};
+//            return new NetworkInterface(var2[0].getHostName(), 0, var2);
+//        }
+//    }
 
-    public void setLoopbackMode(boolean var1) throws SocketException {
-        this.getImpl().setOption(18, var1);
-    }
-
-    public boolean getLoopbackMode() throws SocketException {
-        return (Boolean) this.getImpl().getOption(18);
-    }
+//    public void setLoopbackMode(boolean var1) throws SocketException {
+//        this.getImpl().setOption(18, var1);
+//    }
+//
+//    public boolean getLoopbackMode() throws SocketException {
+//        return (Boolean) this.getImpl().getOption(18);
+//    }
 
     /**
      * @deprecated
